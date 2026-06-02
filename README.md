@@ -83,11 +83,11 @@ Default expected path:
 pretrained/classic_sr_version_a.pth
 ```
 
-For peer-review or public reproduction, download the approved checkpoint from the release page or supplementary review link and place it at the default path. If the checkpoint has not yet been uploaded, architecture profiling still works but PSNR reproduction is not possible.
+For peer-review or public reproduction, download the approved checkpoint from the release page or supplementary review link and place it at the default path. The v0.1.0 release provides the checkpoint used by the reported Test8K x4 results.
 
 ```bash
 mkdir -p pretrained
-wget -O pretrained/classic_sr_version_a.pth <APPROVED_CHECKPOINT_URL>
+wget -O pretrained/classic_sr_version_a.pth https://github.com/YunlongLiu-code/ClassIC-SR/releases/download/v0.1.0/classic_sr_version_a.pth
 ```
 
 If `wget` is unavailable, manually download the approved checkpoint asset and save it as `pretrained/classic_sr_version_a.pth`.
