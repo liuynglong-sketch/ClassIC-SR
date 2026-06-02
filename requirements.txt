@@ -2,8 +2,7 @@ numpy
 opencv-python
 Pillow
 PyYAML
-lmdb
-cffi
+lmdb==1.4.1
 tqdm
 torch>=1.10
 torchvision
