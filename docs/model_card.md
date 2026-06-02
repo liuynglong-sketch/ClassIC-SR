@@ -26,7 +26,7 @@ The classifier architecture is unchanged from the ClassSR-FSRCNN reference and s
 
 ## Intended Use
 
-This repository is intended for research and algorithm reproduction of ClassIC-SR network behavior, including PSNR, PSNR-Y, route distribution, parameter count, FLOPs, and network-level quantization robustness.
+This repository is intended for research and algorithm-level inference/evaluation reproduction of ClassIC-SR network behavior, including PSNR, PSNR-Y, route distribution, parameter count, FLOPs, and network-level quantization robustness. Training scripts and training configs are intentionally not included in this public release.
 
 ## Not Included
 

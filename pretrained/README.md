@@ -8,14 +8,14 @@ Default expected checkpoint path:
 pretrained/classic_sr_version_a.pth
 ```
 
-The pretrained checkpoint will be released after paper acceptance. Without it, users can run architecture profiling but cannot reproduce paper PSNR.
+For peer-review or public reproduction, place the approved ClassIC-SR checkpoint here. Without the checkpoint, users can run architecture profiling but cannot reproduce paper PSNR.
 
-When the checkpoint becomes available through GitHub Releases, download it and place it at the default path:
+When the checkpoint is available through GitHub Releases or an approved supplementary review link, download it and place it at the default path:
 
 ```bash
 mkdir -p pretrained
-# Replace the URL with the release asset URL once available.
-wget -O pretrained/classic_sr_version_a.pth <RELEASE_ASSET_URL>
+# Replace the URL with the approved checkpoint asset URL.
+wget -O pretrained/classic_sr_version_a.pth <APPROVED_CHECKPOINT_URL>
 ```
 
 Do not commit private or unapproved checkpoints to this repository.

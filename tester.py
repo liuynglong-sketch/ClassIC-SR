@@ -78,7 +78,7 @@ def validate_inputs(args):
     checkpoint = Path(args.checkpoint)
     if not checkpoint.is_file():
         raise FileNotFoundError(
-            f"Checkpoint not found: {checkpoint}. Please download the pretrained checkpoint from the release page "
+            f"Checkpoint not found: {checkpoint}. Please download the approved pretrained checkpoint "
             "and place it under pretrained/. See README.md and pretrained/README.md."
         )
     data_root = Path(args.data_root)

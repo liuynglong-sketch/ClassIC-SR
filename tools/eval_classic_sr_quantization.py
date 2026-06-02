@@ -768,7 +768,7 @@ def main():
     precisions = [args.precision] if args.precision != "all" else ["fp32", "bf16", "int8_sim"]
     if not Path(args.checkpoint).is_file():
         raise FileNotFoundError(
-            "Checkpoint not found: {}. Please download the pretrained checkpoint from the release page "
+            "Checkpoint not found: {}. Please download the approved pretrained checkpoint "
             "and place it under pretrained/.".format(args.checkpoint)
         )
     if "bf16" in precisions and not torch.cuda.is_available():
