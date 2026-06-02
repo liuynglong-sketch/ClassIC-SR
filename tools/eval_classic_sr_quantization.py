@@ -73,37 +73,64 @@ def image_paths(root):
 
 
 def resolve_dataset(data_root, name):
+    """Resolve benchmark datasets using README-first paths plus historical fallbacks."""
     data_root = Path(data_root)
     candidates = {
-        "DIV2K_valid": (
-            data_root / "DIV2K/DIV2K_valid_HR",
-            data_root / "data/valid/DIV2K_valid_LR_bicubic_X4/DIV2K_valid_LR_bicubic/X4",
-        ),
-        "Test2K": (
-            data_root / "Test2K4K8K/test2k/HR/X4",
-            data_root / "Test2K4K8K/test2k/LR/X4",
-        ),
-        "Test4K": (
-            data_root / "Test2K4K8K/test4k/HR/X4",
-            data_root / "Test2K4K8K/test4k/LR/X4",
-        ),
-        "Test8K": (
-            data_root / "Test2K4K8K/test8k/HR/X4",
-            data_root / "Test2K4K8K/test8k/LR/X4",
-        ),
+        "DIV2K_valid": [
+            (
+                data_root / "datasets/DIV2K/DIV2K_valid_HR",
+                data_root / "datasets/DIV2K/DIV2K_valid_LR_bicubic/X4",
+            ),
+            (
+                data_root / "DIV2K/DIV2K_valid_HR",
+                data_root / "DIV2K/DIV2K_valid_LR_bicubic/X4",
+            ),
+            (
+                data_root / "DIV2K/DIV2K_valid_HR",
+                data_root / "data/valid/DIV2K_valid_LR_bicubic_X4/DIV2K_valid_LR_bicubic/X4",
+            ),
+        ],
+        "Test2K": [
+            (data_root / "datasets/Test2K/HR/X4", data_root / "datasets/Test2K/LR/X4"),
+            (data_root / "Test2K/HR/X4", data_root / "Test2K/LR/X4"),
+            (data_root / "Test2K4K8K/test2k/HR/X4", data_root / "Test2K4K8K/test2k/LR/X4"),
+        ],
+        "Test4K": [
+            (data_root / "datasets/Test4K/HR/X4", data_root / "datasets/Test4K/LR/X4"),
+            (data_root / "Test4K/HR/X4", data_root / "Test4K/LR/X4"),
+            (data_root / "Test2K4K8K/test4k/HR/X4", data_root / "Test2K4K8K/test4k/LR/X4"),
+        ],
+        "Test8K": [
+            (data_root / "datasets/Test8K/HR/X4", data_root / "datasets/Test8K/LR/X4"),
+            (data_root / "Test8K/HR/X4", data_root / "Test8K/LR/X4"),
+            (data_root / "Test2K4K8K/test8k/HR/X4", data_root / "Test2K4K8K/test8k/LR/X4"),
+        ],
     }
     if name not in candidates:
         raise ValueError("Unsupported dataset {}".format(name))
-    gt_root, lr_root = candidates[name]
-    if not gt_root.is_dir() or not lr_root.is_dir():
-        raise FileNotFoundError("Dataset {} missing: GT={} LR={}".format(name, gt_root, lr_root))
+
+    expected = []
+    selected = None
+    for gt_root, lr_root in candidates[name]:
+        expected.append("GT={} LR={}".format(gt_root, lr_root))
+        if gt_root.is_dir() and lr_root.is_dir():
+            selected = (gt_root, lr_root)
+            break
+    if selected is None:
+        raise FileNotFoundError(
+            "Dataset {} missing. Expected one of:\n  {}".format(name, "\n  ".join(expected))
+        )
+
+    gt_root, lr_root = selected
     gt_paths = image_paths(gt_root)
     lr_by_name = {p.name: p for p in image_paths(lr_root)}
     pairs = []
     for gt in gt_paths:
         lr = lr_by_name.get(gt.name)
         if lr is None:
-            raise FileNotFoundError("Missing LR pair for {} in {}".format(gt.name, lr_root))
+            raise FileNotFoundError(
+                "Missing LR pair for {} in {}. LR/HR file names must match.".format(gt.name, lr_root)
+            )
         pairs.append((lr, gt))
     return {"name": name, "gt_root": str(gt_root), "lr_root": str(lr_root), "pairs": pairs}
 

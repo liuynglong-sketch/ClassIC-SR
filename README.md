@@ -1,26 +1,26 @@
 # ClassIC-SR
 
-ClassIC-SR is an algorithm-level super-resolution network implementation derived from the ClassSR dynamic inference framework. This repository contains the network architecture, data loading code, training/evaluation scripts, PSNR/FLOPs/parameter profiling tools, and FP32/BF16/INT8-simulated inference evaluation utilities for x4 SR.
+ClassIC-SR is the algorithm-level implementation of the proposed Classification-Interpolation-CNN Super-Resolution network. It follows a region-aware evaluation protocol and provides the ClassSR-FSRCNN reference implementation for controlled comparison.
 
-This repository releases the algorithm-level ClassIC-SR implementation. Circuit-level implementation files, foundry/PDK data, SRAM compiler files, and chip measurement data are not included.
+This repository provides the algorithm-level ClassIC-SR implementation for network evaluation and reproducibility. Circuit-level CIM macro files, SRAM compiler data, PDK files, chip measurement logs, and power-estimation scripts are not included.
 
 ## Scope
 
 Included:
 
 - ClassIC-SR / Version A network definition.
-- Original ClassSR-FSRCNN reference network definition for algorithm comparison.
+- ClassSR-FSRCNN reference network definition for controlled algorithm comparison.
 - Dataset loaders and preprocessing-compatible utilities.
 - Training and evaluation entry points.
 - PSNR, PSNR-Y, route distribution, FLOPs, and parameter-count utilities.
-- FP32, BF16, and INT8 fake-quant network inference evaluation.
+- FP32, BF16, and INT8 network-level inference evaluation.
 - Example configs for DIV2K_valid, Test2K, Test4K, and Test8K x4 evaluation.
 
 Not included:
 
 - Benchmark image files or downloaded datasets.
 - Large trained weights by default. Put approved checkpoints under `pretrained/`.
-- Non-algorithm implementation artifacts.
+- CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler files, PDK files, chip measurement logs, power-estimation scripts, or hardware power calculation notebooks.
 
 ## Model
 
@@ -33,7 +33,7 @@ classSR_3class_fsrcnn_medium_2x3x3c24_2x3x3_originhard_net
 Branch structure:
 
 ```text
-Easy branch:
+Simple branch:
   x4 bilinear interpolation
   Conv1x1 3->8
   PReLU
@@ -64,9 +64,9 @@ conda activate classic-sr
 pip install -r requirements.txt
 ```
 
-The original experiments used PyTorch 1.10.x with CUDA. Newer PyTorch versions should work for most inference tasks, but exact numeric reproduction is best checked against the provided metric scripts.
+The original experiments used PyTorch 1.10.x with CUDA. Newer PyTorch versions should work for most inference tasks, but exact numeric reproduction should be checked against the provided metric scripts.
 
-## Dataset layout
+## Dataset Layout
 
 This repository does not include datasets. Prepare x4 LR/HR pairs using this layout or edit the YAML paths:
 
@@ -85,6 +85,20 @@ datasets/
     HR/X4/
     LR/X4/
 ```
+
+The quantization evaluation script also supports the historical local layout:
+
+```text
+Test2K4K8K/
+  test2k/HR/X4/
+  test2k/LR/X4/
+  test4k/HR/X4/
+  test4k/LR/X4/
+  test8k/HR/X4/
+  test8k/LR/X4/
+```
+
+See `docs/dataset_preparation.md` for details.
 
 ## Checkpoints
 
@@ -106,7 +120,7 @@ python codes/eval_classic_sr.py -opt configs/test_classic_sr_x4.yml
 
 Outputs are written to `results/test_classic_sr_x4/`.
 
-## Quantization robustness evaluation
+## Quantization Robustness Evaluation
 
 ```bash
 python tools/eval_classic_sr_quantization.py \
@@ -129,19 +143,37 @@ Notes:
 - `int8_sim` uses fake quantize/dequantize simulation for network weights and activations; it does not depend on backend INT8 kernels.
 - With `--fixed_routes true`, BF16 and INT8-sim reuse FP32 classifier-selected branches to isolate reconstruction-branch numerical error.
 
-## Parameter count
+## Parameter Count
 
 ```bash
 python tools/profile_classic_sr_params.py --output results/param_profile
 ```
 
-## FLOPs calculation
+## FLOPs Calculation
 
 Route-weighted FLOPs use the same convention as the project experiments: Conv/Deconv multiply-adds are counted as 2 FLOPs, and bilinear interpolation arithmetic is excluded from the headline FLOPs table.
 
 ```bash
 python tools/compute_classic_sr_flops.py --route 89561 154952 51899
 ```
+
+## Expected Results
+
+Test8K x4:
+
+- PSNR: 32.64 dB
+- Average FLOPs: 145.52 M
+- FLOPs reduction over ClassSR-FSRCNN: 43.26%
+
+Quantization robustness:
+
+| Dataset | FP32 | BF16 | INT8 |
+|---|---:|---:|---:|
+| Test2K | 25.6058 | 25.6025 | 24.9282 |
+| Test4K | 26.9062 | 26.9012 | 26.0767 |
+| Test8K | 32.6444 | 32.6238 | 30.5352 |
+
+INT8 denotes the repository's network-level INT8 evaluation path. Hardware power estimation, SRAM compiler characterization, and chip measurement data are not included in this repository.
 
 ## Training
 
@@ -151,7 +183,17 @@ Example:
 python codes/train_classic_sr.py -opt configs/train_classic_sr_x4.yml
 ```
 
-The training config expects pre-trained branch checkpoints if you follow the original staged training workflow. Paths are placeholders and should be changed to your local approved checkpoints.
+The training config expects pre-trained branch checkpoints if you follow the staged training workflow. Paths are placeholders and should be changed to your local approved checkpoints.
+
+## Documentation
+
+- `docs/reproducibility.md`: evaluation protocol and precision modes.
+- `docs/dataset_preparation.md`: dataset directory requirements.
+- `docs/model_card.md`: model scope and intended use.
+
+## Citation
+
+See `CITATION.cff`.
 
 ## License
 

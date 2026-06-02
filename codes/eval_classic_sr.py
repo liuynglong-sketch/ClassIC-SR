@@ -145,9 +145,8 @@ for test_loader in test_loaders:
         logger.info(
             '----Average PSNR results for {}----\n\tPSNR: {:.6f} dB; \n'.format(
                 test_set_name, ave_psnr))
-        if test_results['psnr_y'] and test_results['ssim_y']:
+        if test_results['psnr_y']:
             ave_psnr_y = sum(test_results['psnr_y']) / len(test_results['psnr_y'])
-            ave_ssim_y = sum(test_results['ssim_y']) / len(test_results['ssim_y'])
             logger.info(
-                '----Y channel, average PSNR/SSIM----\n\tPSNR_Y: {:.6f} dB; SSIM_Y: {:.6f}\n'.
-                format(ave_psnr_y, ave_ssim_y))
+                '----Y channel, average PSNR----\n\tPSNR_Y: {:.6f} dB;'.
+                format(ave_psnr_y))

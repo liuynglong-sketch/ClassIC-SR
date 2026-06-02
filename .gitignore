@@ -1,21 +1,41 @@
 # Python
 __pycache__/
+*.pyc
+*.pyo
 *.py[cod]
 *.so
 .pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
 
 # Local environments
 .venv/
 venv/
+env/
 .env
 
-# Data and generated outputs
+# Packaging/build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs and generated outputs
+logs/
+runs/
+wandb/
+tb_logger/
+experiments/
+results/*
+!results/.gitkeep
+checkpoints/
+pretrained/*
+!pretrained/.gitkeep
+
+# Datasets and local data
 /datasets/
 /data/
-experiments/
-results/
-tb_logger/
-runs/
+
+# Model/export artifacts
 *.pth
 *.pt
 *.ckpt
@@ -30,12 +50,9 @@ runs/
 *.7z
 *.xlsx
 *.xls
+*.csv
 
-# Keys
-*.key
-*.pem
-
-# Non-algorithm implementation artifacts
+# Non-algorithm/circuit implementation artifacts
 *.lib
 *.lef
 *.gds
@@ -52,3 +69,8 @@ runs/
 *.vh
 *.def
 *.sdc
+
+# Keys and private config
+*.key
+*.pem
+.DS_Store

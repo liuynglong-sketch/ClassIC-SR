@@ -6,3 +6,6 @@ lmdb
 tqdm
 torch>=1.10
 torchvision
+torchsummary
+scipy
+matplotlib

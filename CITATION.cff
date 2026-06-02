@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "ClassIC-SR: Classification-Interpolation-CNN Super-Resolution"
+message: "If you use this repository, please cite the associated paper."
+authors:
+  - family-names: Liu
+    given-names: Yunlong
+repository-code: "https://github.com/liuynglong-sketch/ClassIC-SR"
+license: MIT
