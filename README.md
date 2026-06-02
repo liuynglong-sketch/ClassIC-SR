@@ -2,13 +2,13 @@
 
 ClassIC-SR is the algorithm-level implementation of the proposed Classification-Interpolation-CNN Super-Resolution network. It follows a region-aware evaluation protocol and provides the ClassSR-FSRCNN reference implementation for controlled comparison.
 
-This repository provides the algorithm-level ClassIC-SR implementation for network evaluation and reproducibility. Circuit-level CIM macro files, SRAM compiler data, PDK files, chip measurement logs, and power-estimation scripts are not included.
+This repository provides the algorithm-level ClassIC-SR implementation for network evaluation and reproducibility. Circuit-level is not included.
 
 ## Scope
 
 Included:
 
-- ClassIC-SR / Version A network definition.
+- ClassIC-SR  network definition.
 - ClassSR-FSRCNN reference network definition for controlled algorithm comparison.
 - Dataset loaders and preprocessing-compatible utilities.
 - Training and evaluation entry points.
