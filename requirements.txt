@@ -3,6 +3,7 @@ opencv-python
 Pillow
 PyYAML
 lmdb
+cffi
 tqdm
 torch>=1.10
 torchvision
