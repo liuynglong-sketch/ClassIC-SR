@@ -90,7 +90,17 @@ mkdir -p pretrained
 wget -O pretrained/classic_sr_version_a.pth https://github.com/YunlongLiu-code/ClassIC-SR/releases/download/v0.1.0/classic_sr_version_a.pth
 ```
 
-If `wget` is unavailable, manually download the approved checkpoint asset and save it as `pretrained/classic_sr_version_a.pth`.
+If `wget` fails in a restricted network environment, use GitHub CLI as a fallback:
+
+```bash
+mkdir -p pretrained
+gh release download v0.1.0 \
+  --repo YunlongLiu-code/ClassIC-SR \
+  --pattern classic_sr_version_a.pth \
+  --dir pretrained
+```
+
+If both commands are unavailable, manually download the approved checkpoint asset and save it as `pretrained/classic_sr_version_a.pth`.
 
 ### 4. Prepare datasets
 
