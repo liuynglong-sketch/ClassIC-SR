@@ -2,13 +2,13 @@
 
 ClassIC-SR is the algorithm-level implementation of the proposed Classification-Interpolation-CNN Super-Resolution network. It follows a region-aware evaluation protocol and provides the ClassSR-FSRCNN reference implementation for controlled comparison.
 
-This repository provides the algorithm-level ClassIC-SR implementation for network evaluation and reproducibility. Circuit-level is not included.
+This repository provides the algorithm-level ClassIC-SR implementation for network evaluation and reproducibility. Circuit-level CIM macro files, SRAM compiler data, PDK files, chip measurement logs, and power-estimation scripts are not included.
 
 ## Scope
 
 Included:
 
-- ClassIC-SR  network definition.
+- ClassIC-SR / Version A network definition.
 - ClassSR-FSRCNN reference network definition for controlled algorithm comparison.
 - Dataset loaders and preprocessing-compatible utilities.
 - Training and evaluation entry points.
@@ -20,7 +20,7 @@ Not included:
 
 - Benchmark image files or downloaded datasets.
 - Large trained weights by default. Put approved checkpoints under `pretrained/`.
-- CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler files, PDK files, chip measurement logs, power-estimation scripts, or hardware power calculation notebooks.
+- CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler files, PDK files, chip measurement logs, power-estimation scripts, or hardware calculation notebooks.
 
 ## Model
 
@@ -56,7 +56,16 @@ Classifier:
   Original ClassSR classifier, unchanged.
 ```
 
-## Installation
+## How to Test
+
+### 1. Clone this repository
+
+```bash
+git clone https://github.com/liuynglong-sketch/ClassIC-SR.git
+cd ClassIC-SR
+```
+
+### 2. Create environment
 
 ```bash
 conda create -n classic-sr python=3.8 -y
@@ -66,9 +75,26 @@ pip install -r requirements.txt
 
 The original experiments used PyTorch 1.10.x with CUDA. Newer PyTorch versions should work for most inference tasks, but exact numeric reproduction should be checked against the provided metric scripts.
 
-## Dataset Layout
+### 3. Download pretrained checkpoint
 
-This repository does not include datasets. Prepare x4 LR/HR pairs using this layout or edit the YAML paths:
+Default expected path:
+
+```text
+pretrained/classic_sr_version_a.pth
+```
+
+The pretrained checkpoint will be released after paper acceptance. After it becomes available, download it from the release page and place it at the default path:
+
+```bash
+mkdir -p pretrained
+wget -O pretrained/classic_sr_version_a.pth <RELEASE_ASSET_URL>
+```
+
+If `wget` is unavailable, manually download the release asset and save it as `pretrained/classic_sr_version_a.pth`.
+
+### 4. Prepare datasets
+
+Datasets are not included in this repository. Prepare x4 LR/HR image pairs using this layout:
 
 ```text
 datasets/
@@ -86,84 +112,112 @@ datasets/
     LR/X4/
 ```
 
-The quantization evaluation script also supports the historical local layout:
+The LR and HR images in each folder should have matching file names. See `docs/dataset_preparation.md` for details and historical path fallbacks.
 
-```text
-Test2K4K8K/
-  test2k/HR/X4/
-  test2k/LR/X4/
-  test4k/HR/X4/
-  test4k/LR/X4/
-  test8k/HR/X4/
-  test8k/LR/X4/
-```
-
-See `docs/dataset_preparation.md` for details.
-
-## Checkpoints
-
-Approved public checkpoints can be placed under:
-
-```text
-pretrained/classic_sr_version_a.pth
-```
-
-If no checkpoint is provided, the architecture and profiling scripts still run, but benchmark PSNR will not reproduce trained results.
-
-## Evaluation
-
-Run from the repository root:
+### 5. Run FP32 test
 
 ```bash
-python codes/eval_classic_sr.py -opt configs/test_classic_sr_x4.yml
-```
-
-Outputs are written to `results/test_classic_sr_x4/`.
-
-## Quantization Robustness Evaluation
-
-```bash
-python tools/eval_classic_sr_quantization.py \
-  --precision all \
+python tester.py \
   --checkpoint pretrained/classic_sr_version_a.pth \
-  --data_root . \
+  --data_root datasets \
+  --dataset Test8K \
   --scale 4 \
-  --datasets DIV2K_valid Test2K Test4K Test8K \
-  --fixed_routes true \
-  --calib_dataset DIV2K_valid \
-  --calib_patches 1000 \
-  --output_csv results/classic_sr_quantization_results.csv \
-  --output_md results/classic_sr_quantization_table.md
+  --precision fp32 \
+  --output_dir results/test8k_fp32
 ```
 
-Notes:
+Expected output:
 
-- `fp32` is the baseline inference path.
-- `bf16` uses PyTorch autocast when supported.
-- `int8_sim` uses fake quantize/dequantize simulation for network weights and activations; it does not depend on backend INT8 kernels.
-- With `--fixed_routes true`, BF16 and INT8-sim reuse FP32 classifier-selected branches to isolate reconstruction-branch numerical error.
+- Test8K x4 PSNR approximately 32.64 dB.
+- Average FLOPs approximately 145.52 M.
 
-## Parameter Count
+### 6. Run BF16 test
+
+```bash
+python tester.py \
+  --checkpoint pretrained/classic_sr_version_a.pth \
+  --data_root datasets \
+  --dataset Test8K \
+  --scale 4 \
+  --precision bf16 \
+  --output_dir results/test8k_bf16
+```
+
+Expected output:
+
+- Test8K BF16 PSNR approximately 32.6238 dB.
+
+BF16 evaluation requires CUDA autocast support.
+
+### 7. Run INT8 test
+
+```bash
+python tester.py \
+  --checkpoint pretrained/classic_sr_version_a.pth \
+  --data_root datasets \
+  --dataset Test8K \
+  --scale 4 \
+  --precision int8 \
+  --output_dir results/test8k_int8 \
+  --fixed_routes true
+```
+
+Expected output:
+
+- Test8K INT8 PSNR approximately 30.5352 dB.
+
+`int8` denotes the repository's network-level fake-quantized INT8 evaluation path.
+
+### 8. Run all precision modes
+
+```bash
+python tester.py \
+  --checkpoint pretrained/classic_sr_version_a.pth \
+  --data_root datasets \
+  --dataset Test8K \
+  --scale 4 \
+  --precision all \
+  --output_dir results/test8k_all \
+  --fixed_routes true
+```
+
+The tester writes:
+
+```text
+results/<dataset>_<precision>/metrics.json
+results/<dataset>_<precision>/metrics.txt
+results/<dataset>_<precision>/metrics.csv
+results/<dataset>_<precision>/metrics.md
+```
+
+If you run `python tester.py` without arguments, it prompts for the checkpoint, dataset root, dataset name, precision, and output directory.
+
+## Quick Profiling
+
+Parameter count:
 
 ```bash
 python tools/profile_classic_sr_params.py --output results/param_profile
 ```
 
-## FLOPs Calculation
-
-Route-weighted FLOPs use the same convention as the project experiments: Conv/Deconv multiply-adds are counted as 2 FLOPs, and bilinear interpolation arithmetic is excluded from the headline FLOPs table.
+Route-weighted FLOPs for the reported Test8K route distribution:
 
 ```bash
 python tools/compute_classic_sr_flops.py --route 89561 154952 51899
 ```
 
+Expected Test8K x4:
+
+- Average FLOPs: 145.52 M.
+- FLOPs reduction over ClassSR-FSRCNN: 43.26%.
+
 ## Expected Results
 
 Test8K x4:
 
-- PSNR: 32.64 dB
-- Average FLOPs: 145.52 M
-- FLOPs reduction over ClassSR-FSRCNN: 43.26%
+- PSNR: 32.64 dB.
+- Average FLOPs: 145.52 M.
+- FLOPs reduction over ClassSR-FSRCNN: 43.26%.
 
 Quantization robustness:
 
@@ -173,7 +227,33 @@ Quantization robustness:
 | Test4K | 26.9062 | 26.9012 | 26.0767 |
 | Test8K | 32.6444 | 32.6238 | 30.5352 |
 
-INT8 denotes the repository's network-level INT8 evaluation path. Hardware power estimation, SRAM compiler characterization, and chip measurement data are not included in this repository.
+Small numerical differences may occur due to PyTorch/CUDA versions, image I/O libraries, and hardware environment. See `results/EXPECTED_RESULTS.md`.
+
+## Advanced Evaluation Script
+
+`tester.py` is the recommended public entry point. For advanced runs, call the underlying quantization script directly:
+
+```bash
+python tools/eval_classic_sr_quantization.py \
+  --precision all \
+  --checkpoint pretrained/classic_sr_version_a.pth \
+  --data_root datasets \
+  --scale 4 \
+  --datasets DIV2K_valid Test2K Test4K Test8K \
+  --fixed_routes true \
+  --calib_dataset DIV2K_valid \
+  --calib_patches 1000 \
+  --output_csv results/classic_sr_quantization_results.csv \
+  --output_md results/classic_sr_quantization_table.md \
+  --output_json results/classic_sr_quantization_results.json
+```
+
+Notes:
+
+- `fp32` is the baseline inference path.
+- `bf16` uses PyTorch CUDA autocast when supported.
+- `int8_sim` uses fake quantize/dequantize simulation for network weights and activations; it does not depend on backend INT8 kernels.
+- With `--fixed_routes true`, BF16 and INT8-sim reuse FP32 classifier-selected branches to isolate reconstruction-branch numerical error.
 
 ## Training
 
@@ -190,6 +270,8 @@ The training config expects pre-trained branch checkpoints if you follow the sta
 - `docs/reproducibility.md`: evaluation protocol and precision modes.
 - `docs/dataset_preparation.md`: dataset directory requirements.
 - `docs/model_card.md`: model scope and intended use.
+- `pretrained/README.md`: checkpoint release status.
+- `results/EXPECTED_RESULTS.md`: compact expected result numbers.
 
 ## Citation
 

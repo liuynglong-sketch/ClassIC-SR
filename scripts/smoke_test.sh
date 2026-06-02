@@ -19,9 +19,10 @@ print("cuda_available", torch.cuda.is_available())
 PY
 
 echo "[2/5] compileall"
-python -m compileall codes tools
+python -m compileall codes tools tester.py
 
-echo "[3/5] tool help: quantization"
+echo "[3/5] public tester and quantization help"
+python tester.py --help >/dev/null
 python tools/eval_classic_sr_quantization.py --help >/dev/null
 
 echo "[4/5] tool help: FLOPs and params"

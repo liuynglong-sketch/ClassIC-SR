@@ -27,9 +27,12 @@ tb_logger/
 experiments/
 results/*
 !results/.gitkeep
+!results/README.md
+!results/EXPECTED_RESULTS.md
 checkpoints/
 pretrained/*
 !pretrained/.gitkeep
+!pretrained/README.md
 
 # Datasets and local data
 /datasets/

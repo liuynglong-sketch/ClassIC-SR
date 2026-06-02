@@ -765,6 +765,17 @@ def main():
     args = parser.parse_args()
 
     torch.backends.cudnn.benchmark = True
+    precisions = [args.precision] if args.precision != "all" else ["fp32", "bf16", "int8_sim"]
+    if not Path(args.checkpoint).is_file():
+        raise FileNotFoundError(
+            "Checkpoint not found: {}. Please download the pretrained checkpoint from the release page "
+            "and place it under pretrained/.".format(args.checkpoint)
+        )
+    if "bf16" in precisions and not torch.cuda.is_available():
+        raise RuntimeError(
+            "BF16 evaluation requires CUDA autocast support. Falling back is not enabled. "
+            "Please use FP32 or run on a CUDA-enabled GPU."
+        )
     device = torch.device(args.device if args.device == "cpu" or torch.cuda.is_available() else "cpu")
     env_info = {
         "cwd": os.getcwd(),
@@ -778,9 +789,7 @@ def main():
     print(json.dumps(env_info, indent=2, ensure_ascii=False), flush=True)
 
     datasets = {name: resolve_dataset(args.data_root, name) for name in args.datasets}
-    calib_info = resolve_dataset(args.data_root, args.calib_dataset)
-
-    precisions = [args.precision] if args.precision != "all" else ["fp32", "bf16", "int8_sim"]
+    calib_info = resolve_dataset(args.data_root, args.calib_dataset) if "int8_sim" in precisions else None
     summary_rows = []
     per_image_rows = []
     run_notes = []
