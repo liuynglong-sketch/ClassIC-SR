@@ -6,7 +6,7 @@ ClassIC-SR: Classification-Interpolation-CNN Super-Resolution.
 
 ## Task
 
-x4 single-image super-resolution.
+x4 image super-resolution.
 
 ## Architecture Summary
 
@@ -18,21 +18,19 @@ ClassIC-SR uses region-aware dynamic inference with three reconstruction branche
 
 The classifier architecture is unchanged from the ClassSR-FSRCNN reference and selects one branch per sub-region.
 
-## Precision Modes
-
-The repository supports algorithm-level network evaluation for:
+## Supported Evaluation Precision
 
 - FP32 inference.
-- BF16 inference where supported by PyTorch/CUDA.
+- BF16 inference on CUDA devices with autocast support.
 - INT8 network-level fake quantization simulation.
 
 ## Intended Use
 
-This repository is intended for algorithm-level reproduction, research comparison, and network evaluation of ClassIC-SR.
+This repository is intended for research and algorithm reproduction of ClassIC-SR network behavior, including PSNR, PSNR-Y, route distribution, parameter count, FLOPs, and network-level quantization robustness.
 
 ## Not Included
 
-This repository does not include CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler data, PDK files, chip measurement data, oscilloscope logs, FPGA raw logs, power-estimation scripts, or hardware energy calculation notebooks.
+This repository does not include chip design files, SRAM compiler files, PDK files, foundry files, chip measurement data, oscilloscope logs, FPGA raw logs, or power-estimation scripts.
 
 ## Limitations
 

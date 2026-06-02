@@ -2,11 +2,9 @@
 
 Datasets are not included in this repository. Download or prepare the benchmark images separately, then place LR/HR x4 pairs under the repository root.
 
-## Expected Root
+## Required Folders
 
-The default data root is the repository root. Evaluation scripts expect datasets under `./datasets` unless `--data_root` or YAML paths are changed.
-
-## Recommended Layout
+The recommended root is `datasets/`:
 
 ```text
 datasets/
@@ -28,11 +26,15 @@ datasets/
     LR/X4/
 ```
 
-The LR and HR images in each pair should have matching file names. For x4 SR, LR width and height should be one quarter of the HR width and height.
+## Naming Assumptions
+
+- LR and HR images must have matching file names.
+- For x4 SR, LR width and height should be one quarter of the HR width and height.
+- Supported image extensions include PNG, JPG, JPEG, BMP, and PPM in the underlying tools.
 
 ## Historical Layout Also Supported
 
-`tools/eval_classic_sr_quantization.py` also searches this historical layout:
+`tools/eval_classic_sr_quantization.py` and `tester.py` also search this historical layout:
 
 ```text
 Test2K4K8K/
@@ -44,18 +46,28 @@ Test2K4K8K/
   test8k/LR/X4/
 ```
 
-For DIV2K_valid, it also searches:
+For DIV2K_valid, the tools also search:
 
 ```text
 data/valid/DIV2K_valid_LR_bicubic_X4/DIV2K_valid_LR_bicubic/X4/
 ```
 
-## Config Files
+## Debugging Missing Dataset Errors
 
-The default config uses the recommended layout:
+If `tester.py` reports a missing dataset path, check:
+
+1. The `--data_root` argument points to the intended dataset root. For the README layout, use `--data_root datasets`.
+2. Both `HR/X4` and `LR/X4` folders exist for Test2K/Test4K/Test8K.
+3. LR and HR file names match exactly.
+4. The dataset name passed to `--dataset` is one of `DIV2K_valid`, `Test2K`, `Test4K`, or `Test8K`.
+
+Example:
 
 ```bash
-python codes/eval_classic_sr.py -opt configs/test_classic_sr_x4.yml
+python tester.py \
+  --checkpoint pretrained/classic_sr_version_a.pth \
+  --data_root datasets \
+  --dataset Test8K \
+  --precision fp32 \
+  --output_dir results/test8k_fp32
 ```
-
-If your dataset is stored elsewhere, edit `dataroot_GT` and `dataroot_LQ` in the YAML file or pass the appropriate `--data_root` to tool scripts.
