@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+
+# Local environments
+.venv/
+venv/
+.env
+
+# Data and generated outputs
+/datasets/
+/data/
+experiments/
+results/
+tb_logger/
+runs/
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Archives and spreadsheets
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.xlsx
+*.xls
+
+# Keys
+*.key
+*.pem
+
+# Non-algorithm implementation artifacts
+*.lib
+*.lef
+*.gds
+*.db
+*.spef
+*.sdf
+*.vcd
+*.fsdb
+*.sp
+*.cdl
+*.oas
+*.v
+*.sv
+*.vh
+*.def
+*.sdc

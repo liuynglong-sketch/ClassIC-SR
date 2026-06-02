@@ -1,0 +1,46 @@
+name: test_classic_sr_x4
+suffix: ~
+model: ClassSR
+distortion: sr
+scale: 4
+patch_size: 32
+step: 28
+crop_border: ~
+gpu_ids: [0]
+add_mask: false
+
+datasets:
+  DIV2K_valid:
+    name: DIV2K_valid
+    mode: LQGT
+    dataroot_GT: ./datasets/DIV2K/DIV2K_valid_HR
+    dataroot_LQ: ./datasets/DIV2K/DIV2K_valid_LR_bicubic/X4
+  Test2K:
+    name: Test2K
+    mode: LQGT
+    dataroot_GT: ./datasets/Test2K/HR/X4
+    dataroot_LQ: ./datasets/Test2K/LR/X4
+  Test4K:
+    name: Test4K
+    mode: LQGT
+    dataroot_GT: ./datasets/Test4K/HR/X4
+    dataroot_LQ: ./datasets/Test4K/LR/X4
+  Test8K:
+    name: Test8K
+    mode: LQGT
+    dataroot_GT: ./datasets/Test8K/HR/X4
+    dataroot_LQ: ./datasets/Test8K/LR/X4
+
+network_G:
+  which_model_G: classSR_3class_fsrcnn_medium_2x3x3c24_2x3x3_originhard_net
+  in_nc: 3
+  out_nc: 3
+
+path:
+  pretrain_model_G: ./pretrained/classic_sr_version_a.pth
+  pretrain_model_classifier: ~
+  pretrain_model_G_branch1: ~
+  pretrain_model_G_branch2: ~
+  pretrain_model_G_branch3: ~
+  resume_state: ~
+  strict_load: false
