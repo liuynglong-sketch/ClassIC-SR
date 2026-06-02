@@ -81,6 +81,11 @@ def validate_inputs(args):
             f"Checkpoint not found: {checkpoint}. Please download the approved pretrained checkpoint "
             "and place it under pretrained/. See README.md and pretrained/README.md."
         )
+    if checkpoint.stat().st_size < 1024:
+        raise ValueError(
+            f"Checkpoint file is too small and is likely an incomplete download: {checkpoint}. "
+            "Please re-download it from the GitHub Release page."
+        )
     data_root = Path(args.data_root)
     if not data_root.exists():
         raise FileNotFoundError(

@@ -766,10 +766,16 @@ def main():
 
     torch.backends.cudnn.benchmark = True
     precisions = [args.precision] if args.precision != "all" else ["fp32", "bf16", "int8_sim"]
-    if not Path(args.checkpoint).is_file():
+    ckpt_path = Path(args.checkpoint)
+    if not ckpt_path.is_file():
         raise FileNotFoundError(
             "Checkpoint not found: {}. Please download the approved pretrained checkpoint "
             "and place it under pretrained/.".format(args.checkpoint)
+        )
+    if ckpt_path.stat().st_size < 1024:
+        raise ValueError(
+            "Checkpoint file is too small and is likely an incomplete download: {}. "
+            "Please re-download it from the GitHub Release page.".format(args.checkpoint)
         )
     if "bf16" in precisions and not torch.cuda.is_available():
         raise RuntimeError(

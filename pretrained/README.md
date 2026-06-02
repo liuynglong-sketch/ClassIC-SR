@@ -14,8 +14,17 @@ When the checkpoint is available through GitHub Releases or an approved suppleme
 
 ```bash
 mkdir -p pretrained
-# Replace the URL with the approved checkpoint asset URL.
 wget -O pretrained/classic_sr_version_a.pth https://github.com/YunlongLiu-code/ClassIC-SR/releases/download/v0.1.0/classic_sr_version_a.pth
+```
+
+If `wget` fails in a restricted network environment, use GitHub CLI as a fallback:
+
+```bash
+mkdir -p pretrained
+gh release download v0.1.0 \
+  --repo YunlongLiu-code/ClassIC-SR \
+  --pattern classic_sr_version_a.pth \
+  --dir pretrained
 ```
 
 Do not commit private or unapproved checkpoints to this repository.
