@@ -1,6 +1,11 @@
 # Reproducibility
 
-This document describes algorithm-level reproduction for ClassIC-SR. Circuit-level CIM macro files, SRAM compiler data, PDK files, chip measurement logs, and hardware power-estimation scripts are outside the scope of this repository.
+This document describes algorithm-level inference and evaluation reproduction for ClassIC-SR. Circuit-level CIM macro files, SRAM compiler data, PDK files, chip measurement logs, and hardware power-estimation scripts are outside the scope of this repository.
+
+
+## Release Scope
+
+This repository is an inference/evaluation-only release. It includes network definitions, pretrained-checkpoint loading, PSNR/FLOPs/parameter profiling, and FP32/BF16/INT8 evaluation utilities. Training scripts and training configs are intentionally not included.
 
 ## Recommended Public Entry Point
 

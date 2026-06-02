@@ -11,7 +11,7 @@ Included:
 - ClassIC-SR / Version A network definition.
 - ClassSR-FSRCNN reference network definition for controlled algorithm comparison.
 - Dataset loaders and preprocessing-compatible utilities.
-- Training and evaluation entry points.
+- Inference and evaluation entry points.
 - PSNR, PSNR-Y, route distribution, FLOPs, and parameter-count utilities.
 - FP32, BF16, and INT8 network-level inference evaluation.
 - Example configs for DIV2K_valid, Test2K, Test4K, and Test8K x4 evaluation.
@@ -19,7 +19,7 @@ Included:
 Not included:
 
 - Benchmark image files or downloaded datasets.
-- Large trained weights by default. Put approved checkpoints under `pretrained/`.
+- Training scripts, training configs, private datasets, and large trained weights by default. Put approved public/reviewer checkpoints under `pretrained/`.
 - CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler files, PDK files, chip measurement logs, power-estimation scripts, or hardware calculation notebooks.
 
 ## Model
@@ -83,14 +83,14 @@ Default expected path:
 pretrained/classic_sr_version_a.pth
 ```
 
-The pretrained checkpoint will be released after paper acceptance. After it becomes available, download it from the release page and place it at the default path:
+For peer-review or public reproduction, download the approved checkpoint from the release page or supplementary review link and place it at the default path. If the checkpoint has not yet been uploaded, architecture profiling still works but PSNR reproduction is not possible.
 
 ```bash
 mkdir -p pretrained
-wget -O pretrained/classic_sr_version_a.pth <RELEASE_ASSET_URL>
+wget -O pretrained/classic_sr_version_a.pth <APPROVED_CHECKPOINT_URL>
 ```
 
-If `wget` is unavailable, manually download the release asset and save it as `pretrained/classic_sr_version_a.pth`.
+If `wget` is unavailable, manually download the approved checkpoint asset and save it as `pretrained/classic_sr_version_a.pth`.
 
 ### 4. Prepare datasets
 
@@ -255,15 +255,9 @@ Notes:
 - `int8_sim` uses fake quantize/dequantize simulation for network weights and activations; it does not depend on backend INT8 kernels.
 - With `--fixed_routes true`, BF16 and INT8-sim reuse FP32 classifier-selected branches to isolate reconstruction-branch numerical error.
 
-## Training
+## Inference-only Release
 
-Example:
-
-```bash
-python codes/train_classic_sr.py -opt configs/train_classic_sr_x4.yml
-```
-
-The training config expects pre-trained branch checkpoints if you follow the staged training workflow. Paths are placeholders and should be changed to your local approved checkpoints.
+This public repository is intended for algorithm-level inference, evaluation, profiling, and quantization robustness checks. Training entry points and training configs are intentionally not included in the public release.
 
 ## Documentation
 
