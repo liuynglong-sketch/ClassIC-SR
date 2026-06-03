@@ -20,7 +20,7 @@ Not included:
 
 - Benchmark image files or downloaded datasets.
 - Training scripts, training configs, private datasets, and large trained weights by default. Put approved public/reviewer checkpoints under `pretrained/`.
-- CIM macro RTL, Verilog, netlist, layout, SPICE, SRAM compiler files, PDK files, chip measurement logs, power-estimation scripts, or hardware calculation notebooks.
+- CIM macro RTL, Verilog, netlist.
 
 ## Model
 
